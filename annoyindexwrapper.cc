@@ -1,19 +1,20 @@
-#include "myobject.h"
+#include "annoyindexwrapper.h"
+#include <vector>
 
-Nan::Persistent<v8::Function> MyObject::constructor;
+Nan::Persistent<v8::Function> AnnoyIndexWrapper::constructor;
 
-MyObject::MyObject(double value) : value_(value) {
+AnnoyIndexWrapper::AnnoyIndexWrapper(double value) : value_(value) {
 }
 
-MyObject::~MyObject() {
+AnnoyIndexWrapper::~AnnoyIndexWrapper() {
 }
 
-void MyObject::Init(v8::Local<v8::Object> exports) {
+void AnnoyIndexWrapper::Init(v8::Local<v8::Object> exports) {
   Nan::HandleScope scope;
 
   // Prepare constructor template
   v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);
-  tpl->SetClassName(Nan::New("MyObject").ToLocalChecked());
+  tpl->SetClassName(Nan::New("Annoy").ToLocalChecked());
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
   // Prototype
@@ -22,18 +23,18 @@ void MyObject::Init(v8::Local<v8::Object> exports) {
   Nan::SetPrototypeMethod(tpl, "multiply", Multiply);
 
   constructor.Reset(tpl->GetFunction());
-  exports->Set(Nan::New("MyObject").ToLocalChecked(), tpl->GetFunction());
+  exports->Set(Nan::New("Annoy").ToLocalChecked(), tpl->GetFunction());
 }
 
-void MyObject::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+void AnnoyIndexWrapper::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   if (info.IsConstructCall()) {
-    // Invoked as constructor: `new MyObject(...)`
+    // Invoked as constructor: `new AnnoyIndexWrapper(...)`
     double value = info[0]->IsUndefined() ? 0 : info[0]->NumberValue();
-    MyObject* obj = new MyObject(value);
+    AnnoyIndexWrapper* obj = new AnnoyIndexWrapper(value);
     obj->Wrap(info.This());
     info.GetReturnValue().Set(info.This());
   } else {
-    // Invoked as plain function `MyObject(...)`, turn into construct call.
+    // Invoked as plain function `AnnoyIndexWrapper(...)`, turn into construct call.
     const int argc = 1;
     v8::Local<v8::Value> argv[argc] = { info[0] };
     v8::Local<v8::Function> cons = Nan::New<v8::Function>(constructor);
@@ -41,19 +42,19 @@ void MyObject::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   }
 }
 
-void MyObject::GetValue(const Nan::FunctionCallbackInfo<v8::Value>& info) {
-  MyObject* obj = ObjectWrap::Unwrap<MyObject>(info.Holder());
+void AnnoyIndexWrapper::GetValue(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+  AnnoyIndexWrapper* obj = ObjectWrap::Unwrap<AnnoyIndexWrapper>(info.Holder());
   info.GetReturnValue().Set(Nan::New(obj->value_));
 }
 
-void MyObject::PlusOne(const Nan::FunctionCallbackInfo<v8::Value>& info) {
-  MyObject* obj = ObjectWrap::Unwrap<MyObject>(info.Holder());
+void AnnoyIndexWrapper::PlusOne(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+  AnnoyIndexWrapper* obj = ObjectWrap::Unwrap<AnnoyIndexWrapper>(info.Holder());
   obj->value_ += 1;
   info.GetReturnValue().Set(Nan::New(obj->value_));
 }
 
-void MyObject::Multiply(const Nan::FunctionCallbackInfo<v8::Value>& info) {
-  MyObject* obj = ObjectWrap::Unwrap<MyObject>(info.Holder());
+void AnnoyIndexWrapper::Multiply(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+  AnnoyIndexWrapper* obj = ObjectWrap::Unwrap<AnnoyIndexWrapper>(info.Holder());
   double multiple = info[0]->IsUndefined() ? 1 : info[0]->NumberValue();
 
   v8::Local<v8::Function> cons = Nan::New<v8::Function>(constructor);

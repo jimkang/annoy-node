@@ -1,15 +1,16 @@
-#ifndef MYOBJECT_H
-#define MYOBJECT_H
+#ifndef ANNOYINDEXWRAPPER_H
+#define ANNOYINDEXWRAPPER_H
 
 #include <nan.h>
+#include "annoylib.h"
 
-class MyObject : public Nan::ObjectWrap {
+class AnnoyIndexWrapper : public Nan::ObjectWrap {
  public:
   static void Init(v8::Local<v8::Object> exports);
 
  private:
-  explicit MyObject(double value = 0);
-  ~MyObject();
+  explicit AnnoyIndexWrapper(double value = 0);
+  ~AnnoyIndexWrapper();
 
   static void New(const Nan::FunctionCallbackInfo<v8::Value>& info);
   static void GetValue(const Nan::FunctionCallbackInfo<v8::Value>& info);
