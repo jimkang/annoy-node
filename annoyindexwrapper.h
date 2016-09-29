@@ -21,7 +21,10 @@ class AnnoyIndexWrapper : public Nan::ObjectWrap {
   static void AddItem(const Nan::FunctionCallbackInfo<v8::Value>& info);
   static void Build(const Nan::FunctionCallbackInfo<v8::Value>& info);
   static void Save(const Nan::FunctionCallbackInfo<v8::Value>& info);
+  static void Load(const Nan::FunctionCallbackInfo<v8::Value>& info);
   static Nan::Persistent<v8::Function> constructor;
+  static char *getStringParam(const Nan::FunctionCallbackInfo<v8::Value>& info,
+    int paramIndex);
   // double value_;
   int annoyDimensions;
 };
