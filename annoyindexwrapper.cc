@@ -33,6 +33,7 @@ void AnnoyIndexWrapper::Init(v8::Local<v8::Object> exports) {
   // Nan::SetPrototypeMethod(tpl, "plusOne", PlusOne);
   // Nan::SetPrototypeMethod(tpl, "multiply", Multiply);
   Nan::SetPrototypeMethod(tpl, "addItem", AddItem);
+  Nan::SetPrototypeMethod(tpl, "build", Build);
 
   constructor.Reset(tpl->GetFunction());
   exports->Set(Nan::New("Annoy").ToLocalChecked(), tpl->GetFunction());
@@ -96,15 +97,20 @@ void AnnoyIndexWrapper::AddItem(const Nan::FunctionCallbackInfo<v8::Value>& info
       vec.push_back((float)val->NumberValue());
     }
     printf("%s\n", "Calling add_item");
-    obj->add_item(index, vec.data());
+    obj->annoyIndex->add_item(index, vec.data());
   }
+}
+
+void AnnoyIndexWrapper::Build(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+  // Get out object.
+  AnnoyIndexWrapper* obj = ObjectWrap::Unwrap<AnnoyIndexWrapper>(info.Holder());
+  // Get out numberOfTrees.
+  int numberOfTrees = info[0]->IsUndefined() ? 1 : info[0]->NumberValue();
+  printf("%s\n", "Calling build");
+  obj->annoyIndex->build(numberOfTrees);
 }
 
 int AnnoyIndexWrapper::getDimensions() {
   return annoyDimensions;
-}
-
-void AnnoyIndexWrapper::add_item(int index, const float *array) {
-  annoyIndex->add_item(index, array);
 }
 

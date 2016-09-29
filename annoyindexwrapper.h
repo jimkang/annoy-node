@@ -8,7 +8,7 @@ class AnnoyIndexWrapper : public Nan::ObjectWrap {
  public:
   static void Init(v8::Local<v8::Object> exports);
   int getDimensions();
-  void add_item(int index, const float *array);
+  AnnoyIndexInterface<int, float> *annoyIndex;
 
  private:
   explicit AnnoyIndexWrapper(int dimensions, const char *metricString);
@@ -19,12 +19,10 @@ class AnnoyIndexWrapper : public Nan::ObjectWrap {
   // static void PlusOne(const Nan::FunctionCallbackInfo<v8::Value>& info);
   // static void Multiply(const Nan::FunctionCallbackInfo<v8::Value>& info);
   static void AddItem(const Nan::FunctionCallbackInfo<v8::Value>& info);
+  static void Build(const Nan::FunctionCallbackInfo<v8::Value>& info);
   static Nan::Persistent<v8::Function> constructor;
   // double value_;
-  AnnoyIndexInterface<int, float> *annoyIndex;
   int annoyDimensions;
-  // AnnoyIndex<int, float, Angular, RandRandom> angularIndex;
-  // AnnoyIndex<int, float, Euclidean, RandRandom> euclideanIndex;
 };
 
 #endif
