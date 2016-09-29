@@ -34,6 +34,7 @@ void AnnoyIndexWrapper::Init(v8::Local<v8::Object> exports) {
   // Nan::SetPrototypeMethod(tpl, "multiply", Multiply);
   Nan::SetPrototypeMethod(tpl, "addItem", AddItem);
   Nan::SetPrototypeMethod(tpl, "build", Build);
+  Nan::SetPrototypeMethod(tpl, "save", Save);
 
   constructor.Reset(tpl->GetFunction());
   exports->Set(Nan::New("Annoy").ToLocalChecked(), tpl->GetFunction());
@@ -53,7 +54,9 @@ void AnnoyIndexWrapper::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
       }
     }
 
-    AnnoyIndexWrapper* obj = new AnnoyIndexWrapper((int)dimensions, *String::Utf8Value(metricString));
+    AnnoyIndexWrapper* obj = new AnnoyIndexWrapper(
+      (int)dimensions, *String::Utf8Value(metricString)
+    );
     obj->Wrap(info.This());
     info.GetReturnValue().Set(info.This());
   }
@@ -108,6 +111,20 @@ void AnnoyIndexWrapper::Build(const Nan::FunctionCallbackInfo<v8::Value>& info) 
   int numberOfTrees = info[0]->IsUndefined() ? 1 : info[0]->NumberValue();
   printf("%s\n", "Calling build");
   obj->annoyIndex->build(numberOfTrees);
+}
+
+void AnnoyIndexWrapper::Save(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+  // Get out object.
+  AnnoyIndexWrapper* obj = ObjectWrap::Unwrap<AnnoyIndexWrapper>(info.Holder());
+  // Get out file path.
+  if (!info[0]->IsUndefined()) {
+    Nan::MaybeLocal<String> s = Nan::To<String>(info[0]);
+    if (!s.IsEmpty()) {
+      Local<String> pathString = s.ToLocalChecked();
+      printf("Calling save with %s\n", *String::Utf8Value(pathString));
+      obj->annoyIndex->save(*String::Utf8Value(pathString));
+    }
+  }
 }
 
 int AnnoyIndexWrapper::getDimensions() {

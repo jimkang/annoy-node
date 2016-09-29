@@ -20,6 +20,7 @@ class AnnoyIndexWrapper : public Nan::ObjectWrap {
   // static void Multiply(const Nan::FunctionCallbackInfo<v8::Value>& info);
   static void AddItem(const Nan::FunctionCallbackInfo<v8::Value>& info);
   static void Build(const Nan::FunctionCallbackInfo<v8::Value>& info);
+  static void Save(const Nan::FunctionCallbackInfo<v8::Value>& info);
   static Nan::Persistent<v8::Function> constructor;
   // double value_;
   int annoyDimensions;

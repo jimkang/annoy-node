@@ -14,3 +14,4 @@ var obj = new addon.Annoy(10, 'Angular');
 obj.addItem(0, [-5.0, -4.5, -3.2, -2.8, -2.1, -1.5, -0.34, 0, 3.7, 6]);
 obj.addItem(1, [5.0, 4.5, 3.2, 2.8, 2.1, 1.5, 0.34, 0, -3.7, -6]);
 obj.build();
+obj.save(__dirname + '/test.annoy');
