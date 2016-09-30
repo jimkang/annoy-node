@@ -2,6 +2,7 @@
 #include <vector>
 
 using namespace v8;
+using namespace Nan;
 
 Nan::Persistent<v8::Function> AnnoyIndexWrapper::constructor;
 
@@ -36,6 +37,7 @@ void AnnoyIndexWrapper::Init(v8::Local<v8::Object> exports) {
   Nan::SetPrototypeMethod(tpl, "build", Build);
   Nan::SetPrototypeMethod(tpl, "save", Save);
   Nan::SetPrototypeMethod(tpl, "load", Load);
+  Nan::SetPrototypeMethod(tpl, "getItem", GetItem);
 
   constructor.Reset(tpl->GetFunction());
   exports->Set(Nan::New("Annoy").ToLocalChecked(), tpl->GetFunction());
@@ -92,16 +94,19 @@ void AnnoyIndexWrapper::AddItem(const Nan::FunctionCallbackInfo<v8::Value>& info
   // Get out index.
   int index = info[0]->IsUndefined() ? 1 : info[0]->NumberValue();
   // Get out array.
-  std::vector<float> vec(obj->getDimensions());
-  Handle<Value> val;
+  // std::vector<float> vec(obj->getDimensions());
+  float vec[obj->getDimensions()];
+  Local<Value> val;
   if (info[1]->IsArray()) {
     Handle<Array> jsArray = Handle<Array>::Cast(info[1]);
+    Handle<Value> val;
     for (unsigned int i = 0; i < jsArray->Length(); i++) {
       val = jsArray->Get(i);
-      vec.push_back((float)val->NumberValue());
+      // printf("Adding item to array for AddItem: %f\n", (float)val->NumberValue());
+      vec[i] = (float)val->NumberValue();
     }
-    printf("%s\n", "Calling add_item");
-    obj->annoyIndex->add_item(index, vec.data());
+    // printf("%s\n", "Calling add_item");
+    obj->annoyIndex->add_item(index, vec);
   }
 }
 
@@ -110,7 +115,7 @@ void AnnoyIndexWrapper::Build(const Nan::FunctionCallbackInfo<v8::Value>& info) 
   AnnoyIndexWrapper* obj = ObjectWrap::Unwrap<AnnoyIndexWrapper>(info.Holder());
   // Get out numberOfTrees.
   int numberOfTrees = info[0]->IsUndefined() ? 1 : info[0]->NumberValue();
-  printf("%s\n", "Calling build");
+  // printf("%s\n", "Calling build");
   obj->annoyIndex->build(numberOfTrees);
 }
 
@@ -120,7 +125,7 @@ void AnnoyIndexWrapper::Save(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   // Get out file path.
   char *filePath = getStringParam(info, 0);
   if (filePath) {
-    printf("Calling save with %s\n", filePath);
+    // printf("Calling save with %s\n", filePath);
     obj->annoyIndex->save(filePath);
   }
 }
@@ -132,10 +137,34 @@ void AnnoyIndexWrapper::Load(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   // Get out file path.
   char *filePath = getStringParam(info, 0);
   if (filePath) {
-    printf("Calling load with %s\n", filePath);
-    result = obj->annoyIndex->save(filePath);
+    // printf("Calling load with %s\n", filePath);
+    result = obj->annoyIndex->load(filePath);
   }
   info.GetReturnValue().Set(Nan::New(result));
+}
+
+void AnnoyIndexWrapper::GetItem(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+  Nan::HandleScope scope;
+
+  // Get out object.
+  AnnoyIndexWrapper* obj = ObjectWrap::Unwrap<AnnoyIndexWrapper>(info.Holder());
+
+  // Get out index.
+  int index = info[0]->IsUndefined() ? 1 : info[0]->NumberValue();
+
+  // Get the vector.
+  int length = obj->getDimensions();
+  float vec[length];
+  obj->annoyIndex->get_item(index, vec);
+
+  // Allocate the return array.
+  Local<Array> results = Nan::New<Array>(length);
+  for (int i = 0; i < length; ++i) {
+    printf("Adding to array: %f\n", vec[i]);
+    Nan::Set(results, i, Nan::New<Number>(vec[i]));
+  }
+
+  info.GetReturnValue().Set(results);
 }
 
 char *AnnoyIndexWrapper::getStringParam(

@@ -3,6 +3,8 @@ annoy-node
 
 Node bindings for Annoy, an efficient Approximate Nearest Neighbors implementation written in C++.
 
+Note: Still in early development.
+
 Installation
 ------------
 
@@ -11,9 +13,26 @@ Installation
 Usage
 -----
 
-    var someFactory = require('annoy-node');
-    var thing = someFactory();
-    thing.use();
+    var Annoy = require('annoy-node');
+    var annoyIndex1 = new Annoy(10, 'Angular');
+
+    annoyIndex1.addItem(0, [-5.0, -4.5, -3.2, -2.8, -2.1, -1.5, -0.34, 0, 3.7, 6]);
+    annoyIndex1.addItem(1, [5.0, 4.5, 3.2, 2.8, 2.1, 1.5, 0.34, 0, -3.7, -6]);
+    annoyIndex1.addItem(2, [0, 0, 0, 0, 0, -1, -1, -0.2, 0.1, 0.8]);
+    annoyIndex1.build();
+    annoyIndex1.save(annoyPath);
+
+    read();
+
+    function read() {
+      var annoyIndex2 = new Annoy(10, 'Angular');
+
+      if (annoyIndex2.load(annoyPath)) {
+        var v1 = annoyIndex2.getItem(0);
+        var v2 = annoyIndex2.getItem(1);
+        console.log('Gotten vectors:', v1, v2);
+      }
+    }
 
 Tests
 -----
