@@ -38,6 +38,7 @@ void AnnoyIndexWrapper::Init(v8::Local<v8::Object> exports) {
   Nan::SetPrototypeMethod(tpl, "save", Save);
   Nan::SetPrototypeMethod(tpl, "load", Load);
   Nan::SetPrototypeMethod(tpl, "getItem", GetItem);
+  Nan::SetPrototypeMethod(tpl, "getNNsByVector", GetNNSByVector);
 
   constructor.Reset(tpl->GetFunction());
   exports->Set(Nan::New("Annoy").ToLocalChecked(), tpl->GetFunction());
@@ -65,47 +66,14 @@ void AnnoyIndexWrapper::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   }
 }
 
-// void AnnoyIndexWrapper::GetValue(const Nan::FunctionCallbackInfo<v8::Value>& info) {
-//   AnnoyIndexWrapper* obj = ObjectWrap::Unwrap<AnnoyIndexWrapper>(info.Holder());
-//   info.GetReturnValue().Set(Nan::New(obj->value_));
-// }
-
-// void AnnoyIndexWrapper::AddItem(const Nan::FunctionCallbackInfo<v8::Value>& info) {
-//   AnnoyIndexWrapper* obj = ObjectWrap::Unwrap<AnnoyIndexWrapper>(info.Holder());
-//   obj->value_ += 1;
-//   info.GetReturnValue().Set(Nan::New(obj->value_));
-// }
-
-// void AnnoyIndexWrapper::Multiply(const Nan::FunctionCallbackInfo<v8::Value>& info) {
-//   AnnoyIndexWrapper* obj = ObjectWrap::Unwrap<AnnoyIndexWrapper>(info.Holder());
-//   double multiple = info[0]->IsUndefined() ? 1 : info[0]->NumberValue();
-
-//   v8::Local<v8::Function> cons = Nan::New<v8::Function>(constructor);
-
-//   const int argc = 1;
-//   v8::Local<v8::Value> argv[argc] = { Nan::New(obj->value_ * multiple) };
-
-//   info.GetReturnValue().Set(cons->NewInstance(argc, argv));
-// }
-
 void AnnoyIndexWrapper::AddItem(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   // Get out object.
   AnnoyIndexWrapper* obj = ObjectWrap::Unwrap<AnnoyIndexWrapper>(info.Holder());
   // Get out index.
   int index = info[0]->IsUndefined() ? 1 : info[0]->NumberValue();
   // Get out array.
-  // std::vector<float> vec(obj->getDimensions());
   float vec[obj->getDimensions()];
-  Local<Value> val;
-  if (info[1]->IsArray()) {
-    Handle<Array> jsArray = Handle<Array>::Cast(info[1]);
-    Handle<Value> val;
-    for (unsigned int i = 0; i < jsArray->Length(); i++) {
-      val = jsArray->Get(i);
-      // printf("Adding item to array for AddItem: %f\n", (float)val->NumberValue());
-      vec[i] = (float)val->NumberValue();
-    }
-    // printf("%s\n", "Calling add_item");
+  if (getFloatArrayParam(info, 1, vec)) {
     obj->annoyIndex->add_item(index, vec);
   }
 }
@@ -160,11 +128,76 @@ void AnnoyIndexWrapper::GetItem(const Nan::FunctionCallbackInfo<v8::Value>& info
   // Allocate the return array.
   Local<Array> results = Nan::New<Array>(length);
   for (int i = 0; i < length; ++i) {
-    printf("Adding to array: %f\n", vec[i]);
+    // printf("Adding to array: %f\n", vec[i]);
     Nan::Set(results, i, Nan::New<Number>(vec[i]));
   }
 
   info.GetReturnValue().Set(results);
+}
+
+void AnnoyIndexWrapper::GetNNSByVector(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+  Nan::HandleScope scope;
+
+  // Get out object.
+  AnnoyIndexWrapper* obj = ObjectWrap::Unwrap<AnnoyIndexWrapper>(info.Holder());
+  // Get out array.
+  float vec[obj->getDimensions()];
+  if (!getFloatArrayParam(info, 0, vec)) {
+    return;
+  }
+
+  // Get out number of neighbors.
+  int numberOfNeighbors = info[1]->IsUndefined() ? 1 : info[1]->NumberValue();
+
+  // Get out searchK.
+  int searchK = info[2]->IsUndefined() ? -1 : info[2]->NumberValue();
+
+  // Get out include distances flag.
+  bool includeDistances = info[3]->IsUndefined() ? false : info[3]->BooleanValue();
+
+  std::vector<int> nnIndexes;
+  std::vector<float> distances;
+  std::vector<float> *distancesPtr = nullptr;
+  
+  if (includeDistances) {
+    distancesPtr = &distances;
+  }
+
+  // Make the call.
+  obj->annoyIndex->get_nns_by_vector(
+    vec, numberOfNeighbors, searchK, &nnIndexes, distancesPtr
+  );
+
+  Local<Array> *resultArrayPtr = nullptr;
+
+  // Allocate the neighbors array.
+  Local<Array> jsNNIndexes = Nan::New<Array>(numberOfNeighbors);
+  for (int i = 0; i < numberOfNeighbors; ++i) {
+    // printf("Adding to neighbors array: %d\n", nnIndexes[i]);
+    Nan::Set(jsNNIndexes, i, Nan::New<Number>(nnIndexes[i]));
+  }
+
+  Local<Array> jsResultArray;
+  Local<Array> jsDistancesArray;
+
+  if (includeDistances) {
+    // Allocate the distances array.
+    jsDistancesArray = Nan::New<Array>(numberOfNeighbors);
+    for (int i = 0; i < numberOfNeighbors; ++i) {
+      // printf("Adding to distances array: %f\n", distances[i]);
+      Nan::Set(jsDistancesArray, i, Nan::New<Number>(distances[i]));
+    }
+
+    jsResultArray = Nan::New<Array>(2);
+    Nan::Set(jsResultArray, 0, jsNNIndexes);
+    Nan::Set(jsResultArray, 1, jsDistancesArray);
+    resultArrayPtr = &jsResultArray;
+  }
+  else {
+    resultArrayPtr = &jsNNIndexes;
+  }
+
+  info.GetReturnValue().Set(*resultArrayPtr);
 }
 
 char *AnnoyIndexWrapper::getStringParam(
@@ -179,6 +212,27 @@ char *AnnoyIndexWrapper::getStringParam(
     }
   }
   return stringParam;
+}
+
+// Returns true if it was able to get items out of the array. false, if not.
+bool AnnoyIndexWrapper::getFloatArrayParam(
+  const Nan::FunctionCallbackInfo<v8::Value>& info, int paramIndex, float *vec) {
+
+  bool succeeded = false;
+
+  Local<Value> val;
+  if (info[paramIndex]->IsArray()) {
+    Handle<Array> jsArray = Handle<Array>::Cast(info[paramIndex]);
+    Handle<Value> val;
+    for (unsigned int i = 0; i < jsArray->Length(); i++) {
+      val = jsArray->Get(i);
+      // printf("Adding item to array: %f\n", (float)val->NumberValue());
+      vec[i] = (float)val->NumberValue();
+    }
+    succeeded = true;
+  }
+
+  return succeeded;
 }
 
 int AnnoyIndexWrapper::getDimensions() {

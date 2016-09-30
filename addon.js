@@ -20,10 +20,15 @@ function read() {
     var v1 = obj2.getItem(0);
     var v2 = obj2.getItem(1);
     console.log('Gotten vectors:', v1, v2);
-    // var added = [];
-    // for (var i = 0; i < v1.length; ++i) {
-    //   added.push(v1[i] + v2[i]);
-    // }
+    var sum = [];
+    for (var i = 0; i < v1.length; ++i) {
+      sum.push(v1[i] + v2[i]);
+    }
+    console.log('Sum:', sum);
+    var neighbors = obj2.getNNsByVector(sum, 10, -1, false);
+    console.log('Nearest neighbors to sum', neighbors);
+    var neighborsAndDistances = obj2.getNNsByVector(sum, 10, -1, true);
+    console.log('Nearest neighbors to sum with distances', neighborsAndDistances);
   }
 }
 

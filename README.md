@@ -31,8 +31,24 @@ Usage
         var v1 = annoyIndex2.getItem(0);
         var v2 = annoyIndex2.getItem(1);
         console.log('Gotten vectors:', v1, v2);
+
+          for (var i = 0; i < v1.length; ++i) {
+            sum.push(v1[i] + v2[i]);
+          }
+
+          var neighbors = obj2.getNNsByVector(sum, 10, -1, false);
+          console.log('Nearest neighbors to sum', neighbors);
+
+          var neighborsAndDistances = obj2.getNNsByVector(sum, 10, -1, true);
+          console.log('Nearest neighbors to sum with distances', neighborsAndDistances);
       }
     }
+
+Development
+------------
+
+    npm install -g node-gyp
+    node-gyp rebuild
 
 Tests
 -----

@@ -23,8 +23,11 @@ class AnnoyIndexWrapper : public Nan::ObjectWrap {
   static void Save(const Nan::FunctionCallbackInfo<v8::Value>& info);
   static void Load(const Nan::FunctionCallbackInfo<v8::Value>& info);
   static void GetItem(const Nan::FunctionCallbackInfo<v8::Value>& info);
+  static void GetNNSByVector(const Nan::FunctionCallbackInfo<v8::Value>& info);
 
   static Nan::Persistent<v8::Function> constructor;
+  static bool getFloatArrayParam(const Nan::FunctionCallbackInfo<v8::Value>& info, 
+    int paramIndex, float *vec);
   static char *getStringParam(const Nan::FunctionCallbackInfo<v8::Value>& info,
     int paramIndex);
   // double value_;
