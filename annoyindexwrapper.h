@@ -12,7 +12,7 @@ class AnnoyIndexWrapper : public Nan::ObjectWrap {
 
  private:
   explicit AnnoyIndexWrapper(int dimensions, const char *metricString);
-  ~AnnoyIndexWrapper();
+  virtual ~AnnoyIndexWrapper();
 
   static void New(const Nan::FunctionCallbackInfo<v8::Value>& info);
   // static void GetValue(const Nan::FunctionCallbackInfo<v8::Value>& info);
