@@ -39,6 +39,7 @@ void AnnoyIndexWrapper::Init(v8::Local<v8::Object> exports) {
   Nan::SetPrototypeMethod(tpl, "load", Load);
   Nan::SetPrototypeMethod(tpl, "getItem", GetItem);
   Nan::SetPrototypeMethod(tpl, "getNNsByVector", GetNNSByVector);
+  Nan::SetPrototypeMethod(tpl, "getNItems", GetNItems);
 
   constructor.Reset(tpl->GetFunction());
   exports->Set(Nan::New("Annoy").ToLocalChecked(), tpl->GetFunction());
@@ -168,7 +169,7 @@ void AnnoyIndexWrapper::GetNNSByVector(const Nan::FunctionCallbackInfo<v8::Value
     vec, numberOfNeighbors, searchK, &nnIndexes, distancesPtr
   );
 
-  Local<Array> *resultArrayPtr = nullptr;
+  Local<Object> *resultObjectPtr = nullptr;
 
   // Allocate the neighbors array.
   Local<Array> jsNNIndexes = Nan::New<Array>(numberOfNeighbors);
@@ -177,7 +178,8 @@ void AnnoyIndexWrapper::GetNNSByVector(const Nan::FunctionCallbackInfo<v8::Value
     Nan::Set(jsNNIndexes, i, Nan::New<Number>(nnIndexes[i]));
   }
 
-  Local<Array> jsResultArray;
+  // Local<Object> *jsResultObjectPtr;
+  Local<Object> jsResultObject;
   Local<Array> jsDistancesArray;
 
   if (includeDistances) {
@@ -188,16 +190,16 @@ void AnnoyIndexWrapper::GetNNSByVector(const Nan::FunctionCallbackInfo<v8::Value
       Nan::Set(jsDistancesArray, i, Nan::New<Number>(distances[i]));
     }
 
-    jsResultArray = Nan::New<Array>(2);
-    Nan::Set(jsResultArray, 0, jsNNIndexes);
-    Nan::Set(jsResultArray, 1, jsDistancesArray);
-    resultArrayPtr = &jsResultArray;
+    jsResultObject = Nan::New<Object>();
+    jsResultObject->Set(Nan::New("neighbors").ToLocalChecked(), jsNNIndexes);
+    jsResultObject->Set(Nan::New("distances").ToLocalChecked(), jsDistancesArray);
+    // resultObjectPtr = &jsResultObject;
   }
   else {
-    resultArrayPtr = &jsNNIndexes;
+    jsResultObject = jsNNIndexes.As<Object>();
   }
 
-  info.GetReturnValue().Set(*resultArrayPtr);
+  info.GetReturnValue().Set(jsResultObject);
 }
 
 char *AnnoyIndexWrapper::getStringParam(
@@ -212,6 +214,13 @@ char *AnnoyIndexWrapper::getStringParam(
     }
   }
   return stringParam;
+}
+
+void AnnoyIndexWrapper::GetNItems(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+  // Get out object.
+  AnnoyIndexWrapper* obj = ObjectWrap::Unwrap<AnnoyIndexWrapper>(info.Holder());
+  Local<Number> count = Nan::New<Number>(obj->annoyIndex->get_n_items());
+  info.GetReturnValue().Set(count);
 }
 
 // Returns true if it was able to get items out of the array. false, if not.

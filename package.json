@@ -27,6 +27,8 @@
   },
   "homepage": "https://github.com/jimkang/annoy-node",
   "devDependencies": {
+    "eslint": "^3.7.0",
+    "ndjson": "^1.4.3",
     "tape": "^4.6.0"
   },
   "dependencies": {

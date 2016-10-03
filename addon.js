@@ -7,6 +7,7 @@ var obj = new addon.Annoy(10, 'Angular');
 obj.addItem(0, [-5.0, -4.5, -3.2, -2.8, -2.1, -1.5, -0.34, 0, 3.7, 6]);
 obj.addItem(1, [5.0, 4.5, 3.2, 2.8, 2.1, 1.5, 0.34, 0, -3.7, -6]);
 obj.addItem(2, [0, 0, 0, 0, 0, -1, -1, -0.2, 0.1, 0.8]);
+console.log('Number of items in index:', obj.getNItems());
 obj.build();
 obj.save(annoyPath);
 
@@ -17,6 +18,7 @@ function read() {
 
   if (obj2.load(annoyPath)) {
     console.log('Loaded annoy index!');
+    console.log('Number of items in index:', obj.getNItems());
     var v1 = obj2.getItem(0);
     var v2 = obj2.getItem(1);
     console.log('Gotten vectors:', v1, v2);

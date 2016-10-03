@@ -1,4 +1,4 @@
 .DS_Store
 node_modules
 tests/data/*.bin
-tests/*.annoy
+tests/data/*.annoy
