@@ -69,13 +69,14 @@ Development
 Tests
 -----
 
-Run tests with `make test`. You can also run tests individually:
+Run tests with `make test`.
 
-`node tests/smalltest.js` - This is a short baseline test.
-`node tests/basictests.js` - This is a test that uses 70K 200-dimension vectors.
+You can also run tests individually:
+
+- This is a short baseline test: `node tests/smalltest.js` 
+- This is a test that uses 70K 200-dimension vectors: `node tests/basictests.js` 
 
 There is also a `big-test` target that is not a dependency of the `test` target. It loads about 3 million 300-dimension vectors. It takes about six minutes to run on good-for-2016 hardware. Before you can run it, you need to download [GoogleNews-vectors-negative300.bin](https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?usp=sharing) to `tests/data`.
-started 9:22
 
 License
 -------
