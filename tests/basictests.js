@@ -1,4 +1,4 @@
-/* global __dirname */
+/* global __dirname process */
 
 var test = require('tape');
 var Annoy = require('../index');
@@ -6,7 +6,7 @@ var fs = require('fs');
 var ndjson = require('ndjson');
 
 if (process.argv.length < 3) {
-  console.log('Usage: node tests/basictests.js <test config file path>')
+  console.log('Usage: node tests/basictests.js <test config file path>');
   process.exit();
 }
 
@@ -73,25 +73,33 @@ function usingTest(t) {
   var nnResult = annoyIndex.getNNsByVector(sumVector, 100, -1, true);
   console.log('Neighbors and distances:', nnResult);
 
-  t.equal(typeof nnResult, 'object', 'NN result is an object.');
-
-  t.ok(Array.isArray(nnResult.neighbors), 'NN result has a neighbors array.');
-  t.equal(nnResult.neighbors.length, 100, 'Correct number of neighbors is returned.');
-  t.ok(
-    nnResult.neighbors.every((val) => typeof val  === 'number'),
-    'Neighbors contains all numbers.'
-  );
-
-  t.ok(Array.isArray(nnResult.distances), 'NN result has a distances array.');
-  t.equal(nnResult.distances.length, 100, 'Correct number of distances is returned.');
-  t.ok(
-    nnResult.distances.every((val) => typeof val  === 'number'),
-    'Distances contains all numbers.'
-  );
+  checkNNResult('nnResult', nnResult);
 
   console.log('Third closest neighbor:', wordsForIndexes[nnResult.neighbors[2]]);
 
+  var nnResultByItem = annoyIndex.getNNsByItem(
+    indexesForWords[config.indexLookupWord], 100, -1, true
+  );
+  checkNNResult('nnResultByItem', nnResultByItem);
+
   t.end();
+
+  function checkNNResult(resultName, result) {
+    t.equal(typeof nnResult, 'object', resultName + ' is an object.');
+    t.ok(Array.isArray(result.neighbors), resultName + ' has a neighbors array.');
+    t.equal(result.neighbors.length, 100, 'Correct number of neighbors is returned.');
+    t.ok(
+      result.neighbors.every((val) => typeof val  === 'number'),
+      'Neighbors contains all numbers.'
+    );
+
+    t.ok(Array.isArray(result.distances), resultName + ' has a distances array.');
+    t.equal(result.distances.length, 100, 'Correct number of distances is returned.');
+    t.ok(
+      result.distances.every((val) => typeof val  === 'number'),
+      'Distances contains all numbers.'
+    );
+  }
 
   function checkVector(vector) {
     console.log(vector);

@@ -4,4 +4,5 @@ module.exports = {
   dimensions: 300,
   lookupWord1: 'king',
   lookupWord2: 'woman',
+  indexLookupWord: 'perpendicular'
 };

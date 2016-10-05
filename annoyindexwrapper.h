@@ -24,6 +24,7 @@ class AnnoyIndexWrapper : public Nan::ObjectWrap {
   static void Load(const Nan::FunctionCallbackInfo<v8::Value>& info);
   static void GetItem(const Nan::FunctionCallbackInfo<v8::Value>& info);
   static void GetNNSByVector(const Nan::FunctionCallbackInfo<v8::Value>& info);
+  static void GetNNSByItem(const Nan::FunctionCallbackInfo<v8::Value>& info);
   static void GetNItems(const Nan::FunctionCallbackInfo<v8::Value>& info);
 
   static Nan::Persistent<v8::Function> constructor;
@@ -31,6 +32,14 @@ class AnnoyIndexWrapper : public Nan::ObjectWrap {
     int paramIndex, float *vec);
   static char *getStringParam(const Nan::FunctionCallbackInfo<v8::Value>& info,
     int paramIndex);
+  static void setNNReturnValues(
+    int numberOfNeighbors, bool includeDistances,
+    const std::vector<int>& nnIndexes, const std::vector<float>& distances,
+    const Nan::FunctionCallbackInfo<v8::Value>& info);
+  static void getSupplementaryGetNNsParams(
+    const Nan::FunctionCallbackInfo<v8::Value>& info,
+    int& numberOfNeighbors, int& searchK, bool& includeDistances);
+
   // double value_;
   int annoyDimensions;
 };

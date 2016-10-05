@@ -3,5 +3,6 @@ module.exports = {
   annoyFile: 'test.annoy',
   dimensions: 200,
   lookupWord1: 'big',
-  lookupWord2: 'dog'
+  lookupWord2: 'dog',
+  indexLookupWord: 'fire'
 };

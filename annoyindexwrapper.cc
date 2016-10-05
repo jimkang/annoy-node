@@ -39,6 +39,7 @@ void AnnoyIndexWrapper::Init(v8::Local<v8::Object> exports) {
   Nan::SetPrototypeMethod(tpl, "load", Load);
   Nan::SetPrototypeMethod(tpl, "getItem", GetItem);
   Nan::SetPrototypeMethod(tpl, "getNNsByVector", GetNNSByVector);
+  Nan::SetPrototypeMethod(tpl, "getNNsByItem", GetNNSByItem);
   Nan::SetPrototypeMethod(tpl, "getNItems", GetNItems);
 
   constructor.Reset(tpl->GetFunction());
@@ -139,6 +140,10 @@ void AnnoyIndexWrapper::GetItem(const Nan::FunctionCallbackInfo<v8::Value>& info
 void AnnoyIndexWrapper::GetNNSByVector(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   Nan::HandleScope scope;
 
+  int numberOfNeighbors, searchK;
+  bool includeDistances;
+  getSupplementaryGetNNsParams(info, numberOfNeighbors, searchK, includeDistances);
+
   // Get out object.
   AnnoyIndexWrapper* obj = ObjectWrap::Unwrap<AnnoyIndexWrapper>(info.Holder());
   // Get out array.
@@ -146,15 +151,6 @@ void AnnoyIndexWrapper::GetNNSByVector(const Nan::FunctionCallbackInfo<v8::Value
   if (!getFloatArrayParam(info, 0, vec)) {
     return;
   }
-
-  // Get out number of neighbors.
-  int numberOfNeighbors = info[1]->IsUndefined() ? 1 : info[1]->NumberValue();
-
-  // Get out searchK.
-  int searchK = info[2]->IsUndefined() ? -1 : info[2]->NumberValue();
-
-  // Get out include distances flag.
-  bool includeDistances = info[3]->IsUndefined() ? false : info[3]->BooleanValue();
 
   std::vector<int> nnIndexes;
   std::vector<float> distances;
@@ -169,7 +165,59 @@ void AnnoyIndexWrapper::GetNNSByVector(const Nan::FunctionCallbackInfo<v8::Value
     vec, numberOfNeighbors, searchK, &nnIndexes, distancesPtr
   );
 
-  Local<Object> *resultObjectPtr = nullptr;
+  setNNReturnValues(numberOfNeighbors, includeDistances, nnIndexes, distances, info);
+}
+
+void AnnoyIndexWrapper::GetNNSByItem(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+  Nan::HandleScope scope;
+
+  // Get out object.
+  AnnoyIndexWrapper* obj = ObjectWrap::Unwrap<AnnoyIndexWrapper>(info.Holder());
+
+  if (info[0]->IsUndefined()) {
+    return;
+  }
+
+  // Get out params.
+  int index = info[0]->NumberValue();
+  int numberOfNeighbors, searchK;
+  bool includeDistances;
+  getSupplementaryGetNNsParams(info, numberOfNeighbors, searchK, includeDistances);
+
+  std::vector<int> nnIndexes;
+  std::vector<float> distances;
+  std::vector<float> *distancesPtr = nullptr;
+
+  if (includeDistances) {
+    distancesPtr = &distances;
+  }
+
+  // Make the call.
+  obj->annoyIndex->get_nns_by_item(
+    index, numberOfNeighbors, searchK, &nnIndexes, distancesPtr
+  );
+
+  setNNReturnValues(numberOfNeighbors, includeDistances, nnIndexes, distances, info);
+}
+
+void AnnoyIndexWrapper::getSupplementaryGetNNsParams(
+  const Nan::FunctionCallbackInfo<v8::Value>& info,
+  int& numberOfNeighbors, int& searchK, bool& includeDistances) {
+
+  // Get out number of neighbors.
+  numberOfNeighbors = info[1]->IsUndefined() ? 1 : info[1]->NumberValue();
+
+  // Get out searchK.
+  searchK = info[2]->IsUndefined() ? -1 : info[2]->NumberValue();
+
+  // Get out include distances flag.
+  includeDistances = info[3]->IsUndefined() ? false : info[3]->BooleanValue();
+}
+
+void AnnoyIndexWrapper::setNNReturnValues(
+  int numberOfNeighbors, bool includeDistances,
+  const std::vector<int>& nnIndexes, const std::vector<float>& distances,
+  const Nan::FunctionCallbackInfo<v8::Value>& info) {
 
   // Allocate the neighbors array.
   Local<Array> jsNNIndexes = Nan::New<Array>(numberOfNeighbors);
@@ -178,7 +226,6 @@ void AnnoyIndexWrapper::GetNNSByVector(const Nan::FunctionCallbackInfo<v8::Value
     Nan::Set(jsNNIndexes, i, Nan::New<Number>(nnIndexes[i]));
   }
 
-  // Local<Object> *jsResultObjectPtr;
   Local<Object> jsResultObject;
   Local<Array> jsDistancesArray;
 
@@ -193,7 +240,6 @@ void AnnoyIndexWrapper::GetNNSByVector(const Nan::FunctionCallbackInfo<v8::Value
     jsResultObject = Nan::New<Object>();
     jsResultObject->Set(Nan::New("neighbors").ToLocalChecked(), jsNNIndexes);
     jsResultObject->Set(Nan::New("distances").ToLocalChecked(), jsDistancesArray);
-    // resultObjectPtr = &jsResultObject;
   }
   else {
     jsResultObject = jsNNIndexes.As<Object>();

@@ -13,13 +13,15 @@ APIs implemented:
   - `load`
   - `getItem`
   - `getNNsByVector`
+  - `getNNsByItem`
   - `getNItems`
 
- APIs not yet implemented:
+APIs not yet implemented:
 
-  - `getNNsByItem`
   - `getItemVector`
   - `getDistance`
+
+Behavior and parameters are the same as the [Python API](https://github.com/spotify/annoy#full-python-api).
 
 Installation
 ------------

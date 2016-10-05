@@ -43,11 +43,20 @@ function loadTest(t) {
     console.log('Nearest neighbors to sum', neighbors);
 
     var nnResult = obj2.getNNsByVector(sum, 10, -1, true);
-    t.equal(typeof nnResult, 'object', 'NN result is an object.');
-    t.ok(Array.isArray(nnResult.neighbors), 'NN result has a neighbors array.');
-    t.ok(Array.isArray(nnResult.distances), 'NN result has a distances array.');
-    console.log('Nearest neighbors to sum with distances', nnResult);
+    checkNeighborsAndDistancesResult(nnResult);
+
+    var neighborsByItem = obj2.getNNsByItem(1, 10, -1, false);
+    t.ok(Array.isArray(neighborsByItem), 'NN by item result is an array.');
+    var nnResultByItem = obj2.getNNsByItem(1, 10, -1, true);
+    checkNeighborsAndDistancesResult(nnResultByItem);
   }
 
   t.end();
+
+  function checkNeighborsAndDistancesResult(result) {
+    t.equal(typeof result, 'object', 'NN result is an object.');
+    t.ok(Array.isArray(result.neighbors), 'NN result has a neighbors array.');
+    t.ok(Array.isArray(result.distances), 'NN result has a distances array.');
+    console.log('Nearest neighbors to sum with distances', result);
+  }
 }
