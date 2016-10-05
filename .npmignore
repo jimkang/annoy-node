@@ -1,5 +1,8 @@
-node_modules
-*.log
 .DS_Store
+node_modules
+tests/data/*.bin
+tests/data/*.annoy
+tests/data/*.json
+tools/w2v-to-json
+build
 .npmignore
-config.js
