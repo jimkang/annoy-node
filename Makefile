@@ -27,3 +27,6 @@ tests/data/text8-vector.json: tests/data/text8-vector.bin tools/w2v-to-json
 
 lint:
 	./node_modules/.bin/eslint .
+
+pushall:
+	git push origin master && npm publish
