@@ -1,9 +1,25 @@
 annoy-node
 ==================
 
-Node bindings for Annoy, an efficient Approximate Nearest Neighbors implementation written in C++.
+Node bindings for [Annoy](https://github.com/spotify/annoy), an efficient Approximate Nearest Neighbors implementation written in C++.
 
-Note: Still in early development.
+Status: Tests pass, including one that loads 3 million vectors, but API coverage is not complete.
+
+APIs implemented:
+
+  - `addItem`
+  - `build`
+  - `save`
+  - `load`
+  - `getItem`
+  - `getNNsByVector`
+  - `getNItems`
+
+ APIs not yet implemented:
+
+  - `getNNsByItem`
+  - `getItemVector`
+  - `getDistance`
 
 Installation
 ------------
@@ -53,7 +69,13 @@ Development
 Tests
 -----
 
-Run tests with `make test`.
+Run tests with `make test`. You can also run tests individually:
+
+`node tests/smalltest.js` - This is a short baseline test.
+`node tests/basictests.js` - This is a test that uses 70K 200-dimension vectors.
+
+There is also a `big-test` target that is not a dependency of the `test` target. It loads about 3 million 300-dimension vectors. It takes about six minutes to run on good-for-2016 hardware. Before you can run it, you need to download [GoogleNews-vectors-negative300.bin](https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?usp=sharing) to `tests/data`.
+started 9:22
 
 License
 -------

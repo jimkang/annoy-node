@@ -7,14 +7,17 @@ build-wrapper:
 	node-gyp rebuild
 
 test: tests/data/text8-vector.json
-	node tests/basictests.js
-		# data/text8-vector.bin \
-		# test-word-index.txt \
-		# test-annoy.tree 10 \
-		# big dog
+	node tests/smalltest.js
+	node tests/basictests.js basic-config.js
+
+big-test: tests/data/GoogleNews-vectors-negative300.json
+	node tests/basictests.js very-big-config.js
 
 tests/data/text8-vector.bin:
 	wget https://github.com/jimkang/nearest-neighbor-test-data/raw/master/text8-vector.bin -O $(TESTDATADIR)/text8-vector.bin
+
+tests/data/GoogleNews-vectors-negative300.json: tools/w2v-to-json
+	./tools/w2v-to-json "$(TESTDATADIR)/GoogleNews-vectors-negative300.bin" tests/data/GoogleNews-vectors-negative300.json
 
 tools/w2v-to-json:
 	$(TOOLS_CC) tools/w2v-to-json.c -o tools/w2v-to-json $(TOOLS_CFLAGS)

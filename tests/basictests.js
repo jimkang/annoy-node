@@ -5,11 +5,19 @@ var Annoy = require('../index');
 var fs = require('fs');
 var ndjson = require('ndjson');
 
-const vectorJSONPath = __dirname + '/data/text8-vector.json';
-const annoyIndexPath = __dirname + '/data/test.annoy';
-const dimensions = 200;
+if (process.argv.length < 3) {
+  console.log('Usage: node tests/basictests.js <test config file path>')
+  process.exit();
+}
+
+var config = require('./' + process.argv[2]);
+
+const vectorJSONPath = __dirname + '/data/' + config.vectorJSONFile;
+const annoyIndexPath = __dirname + '/data/' + config.annoyFile;
+const dimensions = config.dimensions;
 
 var indexesForWords = {};
+var wordsForIndexes = {};
 var vectorCount = 0;
 
 test('Adding vectors to Annoy', addTest);
@@ -19,12 +27,13 @@ function addTest(t) {
   var annoyIndex = new Annoy(dimensions, 'Euclidean');
 
   fs.createReadStream(vectorJSONPath)
-    .pipe(ndjson.parse())
+    .pipe(ndjson.parse({strict: false}))
     .on('data', addToAnnoy)
     .on('end', checkAdded);
 
   function addToAnnoy(wordVectorPair) {
     indexesForWords[wordVectorPair.word] = vectorCount;
+    wordsForIndexes[vectorCount] = wordVectorPair.word;
     annoyIndex.addItem(vectorCount, wordVectorPair.vector);
     // process.stdout.write('+');
     vectorCount += 1;
@@ -47,11 +56,11 @@ function usingTest(t) {
   t.equal(
     annoyIndex.getNItems(),
     vectorCount,
-    'The loaded index\'s total vector count is correct.'
+    'The loaded index\'s total vector count is correct: ' + vectorCount
   );
 
-  var v1 = annoyIndex.getItem(indexesForWords['big']);
-  var v2 = annoyIndex.getItem(indexesForWords['dog']);
+  var v1 = annoyIndex.getItem(indexesForWords[config.lookupWord1]);
+  var v2 = annoyIndex.getItem(indexesForWords[config.lookupWord2]);
   checkVector(v1);
   checkVector(v2);
 
@@ -79,6 +88,9 @@ function usingTest(t) {
     nnResult.distances.every((val) => typeof val  === 'number'),
     'Distances contains all numbers.'
   );
+
+  console.log('Third closest neighbor:', wordsForIndexes[nnResult.neighbors[2]]);
+
   t.end();
 
   function checkVector(vector) {
