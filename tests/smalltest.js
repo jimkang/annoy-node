@@ -19,6 +19,7 @@ function addTest(t) {
 
   obj.build();
   obj.save(annoyPath);
+  obj.unload();
   t.end();
 }
 
@@ -28,19 +29,25 @@ function loadTest(t) {
   t.ok(loadResult, 'Loads successfully.');
 
   if (loadResult) {
-    console.log('Loaded annoy index!');
-    console.log('Number of items in index:', obj2.getNItems());
+    t.equal(obj2.getNItems(), 3, 'Number of items in index is correct.');
+
+    t.equal(
+      obj2.getDistance(0, 1),
+      4.0,
+      'getDistance calculates correct distance between items 0 and 1.'
+    );
+
     var v1 = obj2.getItem(0);
     var v2 = obj2.getItem(1);
-    console.log('Gotten vectors:', v1, v2);
+
     var sum = [];
     for (var i = 0; i < v1.length; ++i) {
       sum.push(v1[i] + v2[i]);
     }
-    console.log('Sum:', sum);
+    // console.log('Sum:', sum);
     var neighbors = obj2.getNNsByVector(sum, 10, -1, false);
-    t.ok(Array.isArray(neighbors), 'NN result is an array.');
-    console.log('Nearest neighbors to sum', neighbors);
+    t.ok(Array.isArray(neighbors), 'getNNsByVector result is an array.');
+    // console.log('Nearest neighbors to sum', neighbors);
 
     var nnResult = obj2.getNNsByVector(sum, 10, -1, true);
     checkNeighborsAndDistancesResult(nnResult);
@@ -57,6 +64,6 @@ function loadTest(t) {
     t.equal(typeof result, 'object', 'NN result is an object.');
     t.ok(Array.isArray(result.neighbors), 'NN result has a neighbors array.');
     t.ok(Array.isArray(result.distances), 'NN result has a distances array.');
-    console.log('Nearest neighbors to sum with distances', result);
+    // console.log('Nearest neighbors to sum with distances', result);
   }
 }

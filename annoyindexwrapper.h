@@ -15,17 +15,16 @@ class AnnoyIndexWrapper : public Nan::ObjectWrap {
   virtual ~AnnoyIndexWrapper();
 
   static void New(const Nan::FunctionCallbackInfo<v8::Value>& info);
-  // static void GetValue(const Nan::FunctionCallbackInfo<v8::Value>& info);
-  // static void PlusOne(const Nan::FunctionCallbackInfo<v8::Value>& info);
-  // static void Multiply(const Nan::FunctionCallbackInfo<v8::Value>& info);
   static void AddItem(const Nan::FunctionCallbackInfo<v8::Value>& info);
   static void Build(const Nan::FunctionCallbackInfo<v8::Value>& info);
   static void Save(const Nan::FunctionCallbackInfo<v8::Value>& info);
   static void Load(const Nan::FunctionCallbackInfo<v8::Value>& info);
+  static void Unload(const Nan::FunctionCallbackInfo<v8::Value>& info);
   static void GetItem(const Nan::FunctionCallbackInfo<v8::Value>& info);
   static void GetNNSByVector(const Nan::FunctionCallbackInfo<v8::Value>& info);
   static void GetNNSByItem(const Nan::FunctionCallbackInfo<v8::Value>& info);
   static void GetNItems(const Nan::FunctionCallbackInfo<v8::Value>& info);
+  static void GetDistance(const Nan::FunctionCallbackInfo<v8::Value>& info);
 
   static Nan::Persistent<v8::Function> constructor;
   static bool getFloatArrayParam(const Nan::FunctionCallbackInfo<v8::Value>& info, 
@@ -40,7 +39,6 @@ class AnnoyIndexWrapper : public Nan::ObjectWrap {
     const Nan::FunctionCallbackInfo<v8::Value>& info,
     int& numberOfNeighbors, int& searchK, bool& includeDistances);
 
-  // double value_;
   int annoyDimensions;
 };
 

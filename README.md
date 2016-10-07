@@ -5,23 +5,23 @@ Node bindings for [Annoy](https://github.com/spotify/annoy), an efficient Approx
 
 Status: Tests pass, including one that loads 3 million vectors, but API coverage is not complete.
 
-APIs implemented:
+All of the [Python API](https://github.com/spotify/annoy#full-python-api) methods are implemented. The names are camel cased, JavaScript-style.
 
   - `addItem`
   - `build`
   - `save`
   - `load`
+  - `unload`
   - `getItem`
   - `getNNsByVector`
   - `getNNsByItem`
   - `getNItems`
-
-APIs not yet implemented:
-
-  - `getItemVector`
   - `getDistance`
 
-Behavior and parameters are the same as the [Python API](https://github.com/spotify/annoy#full-python-api).
+There are a few minor differences in behavior:
+
+- If you set the "include distances" param (the fourth param) when calling `getNNsByVector` and `getNNsByItem`, rather than returning a 2D array containing the neighbors and distances, it will return an object with the properties `neighbors` and `distances`, each of which is an array.
+- `get_item_vector` in with the Python API is just called `getItem` here.
 
 Installation
 ------------

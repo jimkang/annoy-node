@@ -45,6 +45,7 @@ function addTest(t) {
     t.equal(annoyIndex.getNItems(), vectorCount, 'The index\'s total vector count is correct.');
     annoyIndex.build();
     annoyIndex.save(annoyIndexPath);
+    annoyIndex.unload();
     t.end();
   }
 }
@@ -59,6 +60,16 @@ function usingTest(t) {
     'The loaded index\'s total vector count is correct: ' + vectorCount
   );
 
+  t.equal(
+    annoyIndex.getDistance(
+      indexesForWords[config.lookupWord1], indexesForWords[config.lookupWord2]
+    )
+    .toPrecision(8),
+    config.distanceBetweenWord1And2.toString(),
+    'getDistance calculates correct distance between items for ' +
+      config.lookupWord1 + ' and ' + config.lookupWord2
+  );
+
   var v1 = annoyIndex.getItem(indexesForWords[config.lookupWord1]);
   var v2 = annoyIndex.getItem(indexesForWords[config.lookupWord2]);
   checkVector(v1);
@@ -69,13 +80,13 @@ function usingTest(t) {
     sumVector.push(v1[i] + v2[i]);
   }
 
-  console.log('Sum:', sumVector);
+  // console.log('Sum:', sumVector);
   var nnResult = annoyIndex.getNNsByVector(sumVector, 100, -1, true);
-  console.log('Neighbors and distances:', nnResult);
+  // console.log('Neighbors and distances:', nnResult);
 
   checkNNResult('nnResult', nnResult);
 
-  console.log('Third closest neighbor:', wordsForIndexes[nnResult.neighbors[2]]);
+  // console.log('Third closest neighbor:', wordsForIndexes[nnResult.neighbors[2]]);
 
   var nnResultByItem = annoyIndex.getNNsByItem(
     indexesForWords[config.indexLookupWord], 100, -1, true
@@ -102,7 +113,7 @@ function usingTest(t) {
   }
 
   function checkVector(vector) {
-    console.log(vector);
+    // console.log(vector);
     t.equal(vector.length, dimensions, 'Vector has correct number of dimensions.');
     t.ok(vector.every((val) => typeof val  === 'number'), 'Vector contains all numbers.');
   }

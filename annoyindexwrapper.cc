@@ -37,10 +37,12 @@ void AnnoyIndexWrapper::Init(v8::Local<v8::Object> exports) {
   Nan::SetPrototypeMethod(tpl, "build", Build);
   Nan::SetPrototypeMethod(tpl, "save", Save);
   Nan::SetPrototypeMethod(tpl, "load", Load);
+  Nan::SetPrototypeMethod(tpl, "unload", Unload);
   Nan::SetPrototypeMethod(tpl, "getItem", GetItem);
   Nan::SetPrototypeMethod(tpl, "getNNsByVector", GetNNSByVector);
   Nan::SetPrototypeMethod(tpl, "getNNsByItem", GetNNSByItem);
   Nan::SetPrototypeMethod(tpl, "getNItems", GetNItems);
+  Nan::SetPrototypeMethod(tpl, "getDistance", GetDistance);
 
   constructor.Reset(tpl->GetFunction());
   exports->Set(Nan::New("Annoy").ToLocalChecked(), tpl->GetFunction());
@@ -113,6 +115,11 @@ void AnnoyIndexWrapper::Load(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   info.GetReturnValue().Set(Nan::New(result));
 }
 
+void AnnoyIndexWrapper::Unload(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+  AnnoyIndexWrapper* obj = ObjectWrap::Unwrap<AnnoyIndexWrapper>(info.Holder());
+  obj->annoyIndex->unload();
+}
+
 void AnnoyIndexWrapper::GetItem(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   Nan::HandleScope scope;
 
@@ -135,6 +142,18 @@ void AnnoyIndexWrapper::GetItem(const Nan::FunctionCallbackInfo<v8::Value>& info
   }
 
   info.GetReturnValue().Set(results);
+}
+
+void AnnoyIndexWrapper::GetDistance(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+  // Get out object.
+  AnnoyIndexWrapper* obj = ObjectWrap::Unwrap<AnnoyIndexWrapper>(info.Holder());
+
+  // Get out indexes.
+  int indexA = info[0]->IsUndefined() ? 0 : info[0]->NumberValue();
+  int indexB = info[1]->IsUndefined() ? 0 : info[1]->NumberValue();
+
+  // Return the distances.
+  info.GetReturnValue().Set(obj->annoyIndex->get_distance(indexA, indexB));
 }
 
 void AnnoyIndexWrapper::GetNNSByVector(const Nan::FunctionCallbackInfo<v8::Value>& info) {
