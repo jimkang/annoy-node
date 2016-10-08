@@ -26,6 +26,20 @@ There are a few minor differences in behavior:
 Installation
 ------------
 
+On Linux, if you don't already have Python 2.7 and g++ 4.8, you need to install them. Here's how you do it on Ubuntu:
+
+    (sudo) apt-get install python2.7
+    (sudo) apt-get install g++-4.8
+    npm config set python /path/to/executable/python2.7
+
+Then, symlink g++ somewhere it can be found:
+
+    ln -s /usr/bin/g++-4.8 /usr/local/bin/g++
+
+On OS X, they should already be there.
+
+Then:
+
     npm install annoy-node
 
 Usage

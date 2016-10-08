@@ -12,3 +12,8 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - g++-4.8
+
+install:
+  - $CXX --version
+  - ln -s /usr/bin/g++-4.8 /usr/local/bin/g++
+  - npm install
