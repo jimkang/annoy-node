@@ -97,10 +97,12 @@ void AnnoyIndexWrapper::Save(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   // Get out object.
   AnnoyIndexWrapper* obj = ObjectWrap::Unwrap<AnnoyIndexWrapper>(info.Holder());
   // Get out file path.
-  char *filePath = getStringParam(info, 0);
-  if (filePath) {
-    // printf("Calling save with %s\n", filePath);
-    result = obj->annoyIndex->save(filePath);
+  if (!info[0]->IsUndefined()) {
+    Nan::MaybeLocal<String> maybeStr = Nan::To<String>(info[0]);
+    v8::Local<String> str;
+    if (maybeStr.ToLocal(&str)) {
+      result = obj->annoyIndex->save(*String::Utf8Value(str));
+    }
   }
   info.GetReturnValue().Set(Nan::New(result));
 }
@@ -110,10 +112,12 @@ void AnnoyIndexWrapper::Load(const Nan::FunctionCallbackInfo<v8::Value>& info) {
   // Get out object.
   AnnoyIndexWrapper* obj = ObjectWrap::Unwrap<AnnoyIndexWrapper>(info.Holder());
   // Get out file path.
-  char *filePath = getStringParam(info, 0);
-  if (filePath) {
-    // printf("Calling load with %s\n", filePath);
-    result = obj->annoyIndex->load(filePath);
+  if (!info[0]->IsUndefined()) {
+    Nan::MaybeLocal<String> maybeStr = Nan::To<String>(info[0]);
+    v8::Local<String> str;
+    if (maybeStr.ToLocal(&str)) {
+      result = obj->annoyIndex->load(*String::Utf8Value(str));
+    }
   }
   info.GetReturnValue().Set(Nan::New(result));
 }
@@ -268,20 +272,6 @@ void AnnoyIndexWrapper::setNNReturnValues(
   }
 
   info.GetReturnValue().Set(jsResultObject);
-}
-
-char *AnnoyIndexWrapper::getStringParam(
-  const Nan::FunctionCallbackInfo<v8::Value>& info, int paramIndex) {
-
-  char *stringParam = NULL;
-  if (!info[0]->IsUndefined()) {
-    Nan::MaybeLocal<String> maybeString = Nan::To<String>(info[0]);
-    if (!maybeString.IsEmpty()) {
-      Local<String> s = maybeString.ToLocalChecked();
-      stringParam = *String::Utf8Value(s);
-    }
-  }
-  return stringParam;
 }
 
 void AnnoyIndexWrapper::GetNItems(const Nan::FunctionCallbackInfo<v8::Value>& info) {
