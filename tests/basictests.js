@@ -44,7 +44,7 @@ function addTest(t) {
     t.ok(vectorCount > 0, 'More than one vector was added to the index.');
     t.equal(annoyIndex.getNItems(), vectorCount, 'The index\'s total vector count is correct.');
     annoyIndex.build();
-    annoyIndex.save(annoyIndexPath);
+    t.ok(annoyIndex.save(annoyIndexPath), 'Saved successfully.');
     annoyIndex.unload();
     t.end();
   }
@@ -52,7 +52,7 @@ function addTest(t) {
 
 function usingTest(t) {
   var annoyIndex = new Annoy(dimensions, 'Euclidean');
-  annoyIndex.load(annoyIndexPath);
+  t.ok(annoyIndex.load(annoyIndexPath), 'Loaded successfully.');
 
   t.equal(
     annoyIndex.getNItems(),

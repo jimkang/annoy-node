@@ -92,14 +92,17 @@ void AnnoyIndexWrapper::Build(const Nan::FunctionCallbackInfo<v8::Value>& info) 
 }
 
 void AnnoyIndexWrapper::Save(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+  bool result = false;
+
   // Get out object.
   AnnoyIndexWrapper* obj = ObjectWrap::Unwrap<AnnoyIndexWrapper>(info.Holder());
   // Get out file path.
   char *filePath = getStringParam(info, 0);
   if (filePath) {
     // printf("Calling save with %s\n", filePath);
-    obj->annoyIndex->save(filePath);
+    result = obj->annoyIndex->save(filePath);
   }
+  info.GetReturnValue().Set(Nan::New(result));
 }
 
 void AnnoyIndexWrapper::Load(const Nan::FunctionCallbackInfo<v8::Value>& info) {

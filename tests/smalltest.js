@@ -18,7 +18,7 @@ function addTest(t) {
   t.equal(obj.getNItems(), 3, 'Index has all the added items.');
 
   obj.build();
-  obj.save(annoyPath);
+  t.ok(obj.save(annoyPath), 'Saved successfully.');
   obj.unload();
   t.end();
 }
