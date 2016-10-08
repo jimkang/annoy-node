@@ -1,6 +1,6 @@
 {
   "name": "annoy",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Node bindings for Annoy, an efficient Approximate Nearest Neighbors implementation written in C++.",
   "main": "index.js",
   "gypfile": true,
