@@ -28,8 +28,10 @@
   "homepage": "https://github.com/jimkang/annoy-node",
   "devDependencies": {
     "eslint": "^3.7.0",
+    "level": "^1.5.0",
     "ndjson": "^1.4.3",
-    "tape": "^4.6.0"
+    "tape": "^4.6.0",
+    "through2": "^2.0.1"
   },
   "dependencies": {
     "bindings": "^1.2.1",
