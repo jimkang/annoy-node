@@ -42,7 +42,7 @@ On OS X, they should already be there.
 
 Then:
 
-    npm install annoy-node
+    npm install annoy
 
 Usage
 -----
