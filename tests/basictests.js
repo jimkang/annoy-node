@@ -96,7 +96,7 @@ function usingTest(t) {
   t.end();
 
   function checkNNResult(resultName, result) {
-    t.equal(typeof nnResult, 'object', resultName + ' is an object.');
+    t.equal(typeof result, 'object', resultName + ' is an object.');
     t.ok(Array.isArray(result.neighbors), resultName + ' has a neighbors array.');
     t.equal(result.neighbors.length, 100, 'Correct number of neighbors is returned.');
     t.ok(
