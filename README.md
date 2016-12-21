@@ -47,7 +47,7 @@ Then:
 Usage
 -----
 
-    var Annoy = require('annoy-node');
+    var Annoy = require('annoy');
     var annoyIndex1 = new Annoy(10, 'Angular');
 
     annoyIndex1.addItem(0, [-5.0, -4.5, -3.2, -2.8, -2.1, -1.5, -0.34, 0, 3.7, 6]);
@@ -70,10 +70,10 @@ Usage
             sum.push(v1[i] + v2[i]);
           }
 
-          var neighbors = obj2.getNNsByVector(sum, 10, -1, false);
+          var neighbors = annoyIndex2.getNNsByVector(sum, 10, -1, false);
           console.log('Nearest neighbors to sum', neighbors);
 
-          var neighborsAndDistances = obj2.getNNsByVector(sum, 10, -1, true);
+          var neighborsAndDistances = annoyIndex2.getNNsByVector(sum, 10, -1, true);
           console.log('Nearest neighbors to sum with distances', neighborsAndDistances);
       }
     }
