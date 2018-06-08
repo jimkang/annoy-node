@@ -29,9 +29,6 @@ tests/data/text8-vector.json: tests/data/text8-vector.bin tools/w2v-to-json
 test-word-index-db:
 	node tools/test-word-index-db.js tests/data/GoogleNews-vectors-negative300.json tests/data/word-index-google-news.db tests/data/very-big-test.annoy
 	
-lint:
-	./node_modules/.bin/eslint .
-
 pushall:
 	git push origin master && npm publish
 
