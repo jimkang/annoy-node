@@ -1,4 +1,5 @@
 #include "annoyindexwrapper.h"
+#include "kissrandom.h"
 #include <vector>
 
 using namespace v8;
@@ -10,10 +11,13 @@ AnnoyIndexWrapper::AnnoyIndexWrapper(int dimensions, const char *metricString) :
   annoyDimensions(dimensions) {
 
   if (strcmp(metricString, "Angular") == 0) {
-    annoyIndex = new AnnoyIndex<int, float, Angular, RandRandom>(dimensions);
+    annoyIndex = new AnnoyIndex<int, float, Angular, Kiss64Random>(dimensions);
+  }
+  else if (strcmp(metricString, "Manhattan") == 0) {
+    annoyIndex = new AnnoyIndex<int, float, Manhattan, Kiss64Random>(dimensions);
   }
   else {
-    annoyIndex = new AnnoyIndex<int, float, Euclidean, RandRandom>(dimensions);    
+    annoyIndex = new AnnoyIndex<int, float, Euclidean, Kiss64Random>(dimensions);    
   }
 }
 

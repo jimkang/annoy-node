@@ -8,6 +8,7 @@ build-wrapper:
 
 test: tests/data/text8-vector.json
 	node tests/smalltest.js
+	node tests/smalltest-manhattan.js
 	node tests/basictests.js basic-config.js
 
 big-test: tests/data/GoogleNews-vectors-negative300.json
