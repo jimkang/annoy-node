@@ -64,7 +64,7 @@ function usingTest(t) {
     annoyIndex.getDistance(
       indexesForWords[config.lookupWord1], indexesForWords[config.lookupWord2]
     )
-    .toPrecision(8),
+    .toPrecision(7),
     config.distanceBetweenWord1And2.toString(),
     'getDistance calculates correct distance between items for ' +
       config.lookupWord1 + ' and ' + config.lookupWord2
