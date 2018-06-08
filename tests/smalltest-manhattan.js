@@ -5,15 +5,14 @@ var Annoy = require('../index');
 
 var annoyPath = __dirname + '/data/test.annoy';
 
-items =
-  [ [-5.0, -4.5, -3.2, -2.8, -2.1, -1.5, -0.34, 0, 3.7, 6]
-  , [5.0, 4.5, 3.2, 2.8, 2.1, 1.5, 0.34, 0, -3.7, -6]
-  , [0, 0, 0, 0, 0, -1, -1, -0.2, 0.1, 0.8]
-  ]
+items = [
+  [-5.0, -4.5, -3.2, -2.8, -2.1, -1.5, -0.34, 0, 3.7, 6],
+  [5.0, 4.5, 3.2, 2.8, 2.1, 1.5, 0.34, 0, -3.7, -6],
+  [0, 0, 0, 0, 0, -1, -1, -0.2, 0.1, 0.8]
+];
 
 test('Add test', addTest);
 test('Load test', loadTest);
-
 
 function addTest(t) {
   var obj = new Annoy(10, 'Manhattan');
@@ -21,7 +20,7 @@ function addTest(t) {
   obj.addItem(0, items[0]);
   obj.addItem(1, items[1]);
   obj.addItem(2, items[2]);
-  
+
   t.equal(obj.getNItems(), 3, 'Index has all the added items.');
 
   obj.build();
@@ -37,10 +36,10 @@ function loadTest(t) {
 
   if (loadResult) {
     t.equal(obj2.getNItems(), 3, 'Number of items in index is correct.');
-    
+
     var dist = 0;
-    for (var i = 0; i < items[0].length; i ++) {
-      dist += Math.abs(items[0][i] - items[1][i])
+    for (var i = 0; i < items[0].length; i++) {
+      dist += Math.abs(items[0][i] - items[1][i]);
     }
 
     t.equal(

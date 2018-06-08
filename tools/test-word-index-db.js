@@ -10,7 +10,9 @@ var assertNoError = require('assert-no-error');
 var Annoy = require('../index');
 
 if (process.argv.length < 5) {
-  console.log('Usage: node tools/test-word-index-db.js <line-delimited JSON file path> <db path> <Annoy path>');
+  console.log(
+    'Usage: node tools/test-word-index-db.js <line-delimited JSON file path> <db path> <Annoy path>'
+  );
   process.exit();
 }
 
@@ -26,9 +28,10 @@ annoyIndex.load(annoyPath);
 
 var vectorCount = 0;
 
-fs.createReadStream(vectorJSONPath)
-  .pipe(ndjson.parse({strict: false}))
-  .pipe(through2({objectMode: true}, runTestOnPair))
+fs
+  .createReadStream(vectorJSONPath)
+  .pipe(ndjson.parse({ strict: false }))
+  .pipe(through2({ objectMode: true }, runTestOnPair))
   .on('end', closeDb);
 
 function runTestOnPair(wordVectorPair, enc, done) {
@@ -68,8 +71,7 @@ function closeDb() {
   function logDone(error) {
     if (error) {
       console.error(error);
-    }
-    else {
+    } else {
       console.log('Done testing db.');
     }
   }

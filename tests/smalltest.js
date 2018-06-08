@@ -14,7 +14,7 @@ function addTest(t) {
   obj.addItem(0, [-5.0, -4.5, -3.2, -2.8, -2.1, -1.5, -0.34, 0, 3.7, 6]);
   obj.addItem(1, [5.0, 4.5, 3.2, 2.8, 2.1, 1.5, 0.34, 0, -3.7, -6]);
   obj.addItem(2, [0, 0, 0, 0, 0, -1, -1, -0.2, 0.1, 0.8]);
-  
+
   t.equal(obj.getNItems(), 3, 'Index has all the added items.');
 
   obj.build();

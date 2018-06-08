@@ -84,6 +84,8 @@ Development
     npm install -g node-gyp
     node-gyp rebuild
 
+Run `make prettier` before committing.
+
 Tests
 -----
 

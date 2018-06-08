@@ -26,8 +26,9 @@ test('Using vectors from Annoy', usingTest);
 function addTest(t) {
   var annoyIndex = new Annoy(dimensions, 'Euclidean');
 
-  fs.createReadStream(vectorJSONPath)
-    .pipe(ndjson.parse({strict: false}))
+  fs
+    .createReadStream(vectorJSONPath)
+    .pipe(ndjson.parse({ strict: false }))
     .on('data', addToAnnoy)
     .on('end', checkAdded);
 
@@ -42,7 +43,11 @@ function addTest(t) {
 
   function checkAdded() {
     t.ok(vectorCount > 0, 'More than one vector was added to the index.');
-    t.equal(annoyIndex.getNItems(), vectorCount, 'The index\'s total vector count is correct.');
+    t.equal(
+      annoyIndex.getNItems(),
+      vectorCount,
+      "The index's total vector count is correct."
+    );
     annoyIndex.build();
     t.ok(annoyIndex.save(annoyIndexPath), 'Saved successfully.');
     annoyIndex.unload();
@@ -57,17 +62,21 @@ function usingTest(t) {
   t.equal(
     annoyIndex.getNItems(),
     vectorCount,
-    'The loaded index\'s total vector count is correct: ' + vectorCount
+    "The loaded index's total vector count is correct: " + vectorCount
   );
 
   t.equal(
-    annoyIndex.getDistance(
-      indexesForWords[config.lookupWord1], indexesForWords[config.lookupWord2]
-    )
-    .toPrecision(7),
+    annoyIndex
+      .getDistance(
+        indexesForWords[config.lookupWord1],
+        indexesForWords[config.lookupWord2]
+      )
+      .toPrecision(7),
     config.distanceBetweenWord1And2.toString(),
     'getDistance calculates correct distance between items for ' +
-      config.lookupWord1 + ' and ' + config.lookupWord2
+      config.lookupWord1 +
+      ' and ' +
+      config.lookupWord2
   );
 
   var v1 = annoyIndex.getItem(indexesForWords[config.lookupWord1]);
@@ -89,7 +98,10 @@ function usingTest(t) {
   // console.log('Third closest neighbor:', wordsForIndexes[nnResult.neighbors[2]]);
 
   var nnResultByItem = annoyIndex.getNNsByItem(
-    indexesForWords[config.indexLookupWord], 100, -1, true
+    indexesForWords[config.indexLookupWord],
+    100,
+    -1,
+    true
   );
   checkNNResult('nnResultByItem', nnResultByItem);
 
@@ -97,24 +109,45 @@ function usingTest(t) {
 
   function checkNNResult(resultName, result) {
     t.equal(typeof result, 'object', resultName + ' is an object.');
-    t.ok(Array.isArray(result.neighbors), resultName + ' has a neighbors array.');
-    t.equal(result.neighbors.length, 100, 'Correct number of neighbors is returned.');
     t.ok(
-      result.neighbors.every((val) => typeof val  === 'number'),
+      Array.isArray(result.neighbors),
+      resultName + ' has a neighbors array.'
+    );
+    t.equal(
+      result.neighbors.length,
+      100,
+      'Correct number of neighbors is returned.'
+    );
+    t.ok(
+      result.neighbors.every(val => typeof val === 'number'),
       'Neighbors contains all numbers.'
     );
 
-    t.ok(Array.isArray(result.distances), resultName + ' has a distances array.');
-    t.equal(result.distances.length, 100, 'Correct number of distances is returned.');
     t.ok(
-      result.distances.every((val) => typeof val  === 'number'),
+      Array.isArray(result.distances),
+      resultName + ' has a distances array.'
+    );
+    t.equal(
+      result.distances.length,
+      100,
+      'Correct number of distances is returned.'
+    );
+    t.ok(
+      result.distances.every(val => typeof val === 'number'),
       'Distances contains all numbers.'
     );
   }
 
   function checkVector(vector) {
     // console.log(vector);
-    t.equal(vector.length, dimensions, 'Vector has correct number of dimensions.');
-    t.ok(vector.every((val) => typeof val  === 'number'), 'Vector contains all numbers.');
+    t.equal(
+      vector.length,
+      dimensions,
+      'Vector has correct number of dimensions.'
+    );
+    t.ok(
+      vector.every(val => typeof val === 'number'),
+      'Vector contains all numbers.'
+    );
   }
 }
