@@ -48,8 +48,8 @@ void AnnoyIndexWrapper::Init(v8::Local<v8::Object> exports) {
   Nan::SetPrototypeMethod(tpl, "getNItems", GetNItems);
   Nan::SetPrototypeMethod(tpl, "getDistance", GetDistance);
 
-  constructor.Reset(tpl->GetFunction());
-  exports->Set(Nan::New("Annoy").ToLocalChecked(), tpl->GetFunction());
+  constructor.Reset(Nan::GetFunction(tpl).ToLocalChecked());
+  exports->Set(Nan::New("Annoy").ToLocalChecked(), Nan::GetFunction(tpl).ToLocalChecked());
 }
 
 void AnnoyIndexWrapper::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
@@ -293,8 +293,9 @@ bool AnnoyIndexWrapper::getFloatArrayParam(
 
   Local<Value> val;
   if (info[paramIndex]->IsArray()) {
-    Handle<Array> jsArray = Handle<Array>::Cast(info[paramIndex]);
-    Handle<Value> val;
+    // TODO: Make sure it really is OK to use Local instead of Handle here.
+    Local<Array> jsArray = Local<Array>::Cast(info[paramIndex]);
+    Local<Value> val;
     for (unsigned int i = 0; i < jsArray->Length(); i++) {
       val = jsArray->Get(i);
       // printf("Adding item to array: %f\n", (float)val->NumberValue());

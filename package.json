@@ -29,6 +29,7 @@
   "devDependencies": {
     "assert-no-error": "^1.0.0",
     "d3-queue": "^3.0.3",
+    "level-sublevel": "^6.6.4",
     "ndjson": "^1.4.3",
     "tape": "^4.9.1",
     "through2": "^2.0.1"
@@ -36,7 +37,6 @@
   "dependencies": {
     "bindings": "^1.2.1",
     "level": "^6.0.0",
-    "level-sublevel": "^6.6.2",
-    "nan": "^2.4.0"
+    "nan": "^2.14.0"
   }
 }
