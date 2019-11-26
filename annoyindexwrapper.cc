@@ -56,7 +56,7 @@ void AnnoyIndexWrapper::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
 
   if (info.IsConstructCall()) {
     // Invoked as constructor: `new AnnoyIndexWrapper(...)`
-    double dimensions = info[0]->IsUndefined() ? 0 : info[0]->NumberValue();
+    double dimensions = info[0]->IsUndefined() ? 0 : info[0]->NumberValue(Nan::GetCurrentContext()).FromJust();
     Local<String> metricString; 
 
     if (!info[1]->IsUndefined()) {
