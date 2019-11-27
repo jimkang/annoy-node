@@ -5,7 +5,7 @@ annoy-node
 
 Node bindings for [Annoy](https://github.com/spotify/annoy), an efficient Approximate Nearest Neighbors implementation written in C++.
 
-Status: Tests pass, including one that loads 3 million vectors, but API coverage is not complete. Run on OS X and Linux with Node 6.3 and 4.6. Not tried on Windows yet.
+Status: Tests pass, including one that loads 3 million vectors, but API coverage is not complete. Run on OS X and Linux with Node 8, 10, and 12. Not tried on Windows yet. Support for Node 6.3 and 4.6 ended at version 2.0.1 of this package.
 
 All of the [Python API](https://github.com/spotify/annoy#full-python-api) methods are implemented. The names are camel cased, JavaScript-style.
 
@@ -97,6 +97,14 @@ You can also run tests individually:
 - This is a test that uses 70K 200-dimension vectors: `node tests/basictests.js` 
 
 There is also a `big-test` target that is not a dependency of the `test` target. It loads about 3 million 300-dimension vectors. It takes about six minutes to run on good-for-2016 hardware. Before you can run it, you need to download [GoogleNews-vectors-negative300.bin](https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?usp=sharing) to `tests/data`.
+
+Contributors
+------------
+
+Thanks to:
+
+- @mbuszka for [updating the wrapper to the latest Annoy (with Manhattan distance) and updating the random number generator](https://github.com/jimkang/annoy-node/pull/4).
+- @aaaton for [updating the example code so that it works](https://github.com/jimkang/annoy-node/pull/1).
 
 License
 -------

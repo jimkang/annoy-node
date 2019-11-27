@@ -48,15 +48,15 @@ void AnnoyIndexWrapper::Init(v8::Local<v8::Object> exports) {
   Nan::SetPrototypeMethod(tpl, "getNItems", GetNItems);
   Nan::SetPrototypeMethod(tpl, "getDistance", GetDistance);
 
-  constructor.Reset(tpl->GetFunction());
-  exports->Set(Nan::New("Annoy").ToLocalChecked(), tpl->GetFunction());
+  constructor.Reset(Nan::GetFunction(tpl).ToLocalChecked());
+  exports->Set(Nan::New("Annoy").ToLocalChecked(), Nan::GetFunction(tpl).ToLocalChecked());
 }
 
 void AnnoyIndexWrapper::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
 
   if (info.IsConstructCall()) {
     // Invoked as constructor: `new AnnoyIndexWrapper(...)`
-    double dimensions = info[0]->IsUndefined() ? 0 : info[0]->NumberValue();
+    double dimensions = info[0]->IsUndefined() ? 0 : info[0]->NumberValue(Nan::GetCurrentContext()).FromJust();
     Local<String> metricString; 
 
     if (!info[1]->IsUndefined()) {
@@ -67,7 +67,7 @@ void AnnoyIndexWrapper::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     }
 
     AnnoyIndexWrapper* obj = new AnnoyIndexWrapper(
-      (int)dimensions, *String::Utf8Value(metricString)
+      (int)dimensions, *Nan::Utf8String(metricString)
     );
     obj->Wrap(info.This());
     info.GetReturnValue().Set(info.This());
@@ -78,7 +78,7 @@ void AnnoyIndexWrapper::AddItem(const Nan::FunctionCallbackInfo<v8::Value>& info
   // Get out object.
   AnnoyIndexWrapper* obj = ObjectWrap::Unwrap<AnnoyIndexWrapper>(info.Holder());
   // Get out index.
-  int index = info[0]->IsUndefined() ? 1 : info[0]->NumberValue();
+  int index = info[0]->IsUndefined() ? 1 : info[0]->NumberValue(Nan::GetCurrentContext()).FromJust();
   // Get out array.
   float vec[obj->getDimensions()];
   if (getFloatArrayParam(info, 1, vec)) {
@@ -90,7 +90,7 @@ void AnnoyIndexWrapper::Build(const Nan::FunctionCallbackInfo<v8::Value>& info) 
   // Get out object.
   AnnoyIndexWrapper* obj = ObjectWrap::Unwrap<AnnoyIndexWrapper>(info.Holder());
   // Get out numberOfTrees.
-  int numberOfTrees = info[0]->IsUndefined() ? 1 : info[0]->NumberValue();
+  int numberOfTrees = info[0]->IsUndefined() ? 1 : info[0]->NumberValue(Nan::GetCurrentContext()).FromJust();
   // printf("%s\n", "Calling build");
   obj->annoyIndex->build(numberOfTrees);
 }
@@ -105,7 +105,7 @@ void AnnoyIndexWrapper::Save(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     Nan::MaybeLocal<String> maybeStr = Nan::To<String>(info[0]);
     v8::Local<String> str;
     if (maybeStr.ToLocal(&str)) {
-      result = obj->annoyIndex->save(*String::Utf8Value(str));
+      result = obj->annoyIndex->save(*Nan::Utf8String(str));
     }
   }
   info.GetReturnValue().Set(Nan::New(result));
@@ -120,7 +120,7 @@ void AnnoyIndexWrapper::Load(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     Nan::MaybeLocal<String> maybeStr = Nan::To<String>(info[0]);
     v8::Local<String> str;
     if (maybeStr.ToLocal(&str)) {
-      result = obj->annoyIndex->load(*String::Utf8Value(str));
+      result = obj->annoyIndex->load(*Nan::Utf8String(str));
     }
   }
   info.GetReturnValue().Set(Nan::New(result));
@@ -138,7 +138,7 @@ void AnnoyIndexWrapper::GetItem(const Nan::FunctionCallbackInfo<v8::Value>& info
   AnnoyIndexWrapper* obj = ObjectWrap::Unwrap<AnnoyIndexWrapper>(info.Holder());
 
   // Get out index.
-  int index = info[0]->IsUndefined() ? 1 : info[0]->NumberValue();
+  int index = info[0]->IsUndefined() ? 1 : info[0]->NumberValue(Nan::GetCurrentContext()).FromJust();
 
   // Get the vector.
   int length = obj->getDimensions();
@@ -160,8 +160,8 @@ void AnnoyIndexWrapper::GetDistance(const Nan::FunctionCallbackInfo<v8::Value>& 
   AnnoyIndexWrapper* obj = ObjectWrap::Unwrap<AnnoyIndexWrapper>(info.Holder());
 
   // Get out indexes.
-  int indexA = info[0]->IsUndefined() ? 0 : info[0]->NumberValue();
-  int indexB = info[1]->IsUndefined() ? 0 : info[1]->NumberValue();
+  int indexA = info[0]->IsUndefined() ? 0 : info[0]->NumberValue(Nan::GetCurrentContext()).FromJust();
+  int indexB = info[1]->IsUndefined() ? 0 : info[1]->NumberValue(Nan::GetCurrentContext()).FromJust();
 
   // Return the distances.
   info.GetReturnValue().Set(obj->annoyIndex->get_distance(indexA, indexB));
@@ -209,7 +209,7 @@ void AnnoyIndexWrapper::GetNNSByItem(const Nan::FunctionCallbackInfo<v8::Value>&
   }
 
   // Get out params.
-  int index = info[0]->NumberValue();
+  int index = info[0]->NumberValue(Nan::GetCurrentContext()).FromJust();
   int numberOfNeighbors, searchK;
   bool includeDistances;
   getSupplementaryGetNNsParams(info, numberOfNeighbors, searchK, includeDistances);
@@ -234,14 +234,16 @@ void AnnoyIndexWrapper::getSupplementaryGetNNsParams(
   const Nan::FunctionCallbackInfo<v8::Value>& info,
   int& numberOfNeighbors, int& searchK, bool& includeDistances) {
 
+  v8::Local<v8::Context> context = Nan::GetCurrentContext();
+
   // Get out number of neighbors.
-  numberOfNeighbors = info[1]->IsUndefined() ? 1 : info[1]->NumberValue();
+  numberOfNeighbors = info[1]->IsUndefined() ? 1 : info[1]->NumberValue(context).FromJust();
 
   // Get out searchK.
-  searchK = info[2]->IsUndefined() ? -1 : info[2]->NumberValue();
+  searchK = info[2]->IsUndefined() ? -1 : info[2]->NumberValue(context).FromJust();
 
   // Get out include distances flag.
-  includeDistances = info[3]->IsUndefined() ? false : info[3]->BooleanValue();
+  includeDistances = info[3]->IsUndefined() ? false : info[3]->BooleanValue(context).FromJust();
 }
 
 void AnnoyIndexWrapper::setNNReturnValues(
@@ -293,12 +295,13 @@ bool AnnoyIndexWrapper::getFloatArrayParam(
 
   Local<Value> val;
   if (info[paramIndex]->IsArray()) {
-    Handle<Array> jsArray = Handle<Array>::Cast(info[paramIndex]);
-    Handle<Value> val;
+    // TODO: Make sure it really is OK to use Local instead of Handle here.
+    Local<Array> jsArray = Local<Array>::Cast(info[paramIndex]);
+    Local<Value> val;
     for (unsigned int i = 0; i < jsArray->Length(); i++) {
       val = jsArray->Get(i);
-      // printf("Adding item to array: %f\n", (float)val->NumberValue());
-      vec[i] = (float)val->NumberValue();
+      // printf("Adding item to array: %f\n", (float)val->NumberValue(Nan::GetCurrentContext()).FromJust());
+      vec[i] = (float)val->NumberValue(Nan::GetCurrentContext()).FromJust();
     }
     succeeded = true;
   }
