@@ -98,6 +98,14 @@ You can also run tests individually:
 
 There is also a `big-test` target that is not a dependency of the `test` target. It loads about 3 million 300-dimension vectors. It takes about six minutes to run on good-for-2016 hardware. Before you can run it, you need to download [GoogleNews-vectors-negative300.bin](https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?usp=sharing) to `tests/data`.
 
+Contributors
+------------
+
+Thanks to:
+
+- @mbuszka for [updating the wrapper to the latest Annoy (with Manhattan distance) and updating the random number generator](https://github.com/jimkang/annoy-node/pull/4).
+- @aaaton for [updating the example code so that it works](https://github.com/jimkang/annoy-node/pull/1).
+
 License
 -------
 
