@@ -93,10 +93,12 @@ Run tests with `make test`.
 
 You can also run tests individually:
 
-- This is a short baseline test: `node tests/smalltest.js` 
-- This is a test that uses 70K 200-dimension vectors: `node tests/basictests.js` 
+- This is a short baseline test: `node tests/smalltest.js`
+- This is a test that uses 70K 200-dimension vectors: `node tests/basictests.js`
 
 There is also a `big-test` target that is not a dependency of the `test` target. It loads about 3 million 300-dimension vectors. It takes about six minutes to run on good-for-2016 hardware. Before you can run it, you need to download [GoogleNews-vectors-negative300.bin](https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?usp=sharing) to `tests/data`.
+
+Then, you can run `make tests/data/GoogleNews-vectors-negative300.json`, which takes a while, and gets the test data read for the big test. (See comment about running that in the Makefile.) Then, `make big-test`.
 
 Contributors
 ------------
@@ -105,6 +107,7 @@ Thanks to:
 
 - @mbuszka for [updating the wrapper to the latest Annoy (with Manhattan distance) and updating the random number generator](https://github.com/jimkang/annoy-node/pull/4).
 - @aaaton for [updating the example code so that it works](https://github.com/jimkang/annoy-node/pull/1).
+- @kornesh for [updating annoylib.h](https://github.com/jimkang/annoy-node/pull/10) to match the [Annoy of 2020-07-19](https://github.com/spotify/annoy/commit/7f2562add33eeb217dcdc755520c201aefc1b021).
 
 License
 -------

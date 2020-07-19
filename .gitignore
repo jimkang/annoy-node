@@ -5,3 +5,4 @@ tests/data/*.annoy
 tests/data/*.json
 tools/w2v-to-json
 build
+*.swp
