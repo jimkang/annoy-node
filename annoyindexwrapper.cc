@@ -49,7 +49,7 @@ void AnnoyIndexWrapper::Init(v8::Local<v8::Object> exports) {
   Nan::SetPrototypeMethod(tpl, "getDistance", GetDistance);
 
   constructor.Reset(Nan::GetFunction(tpl).ToLocalChecked());
-  exports->Set(Nan::New("Annoy").ToLocalChecked(), Nan::GetFunction(tpl).ToLocalChecked());
+  Nan::Set(exports, Nan::New("Annoy").ToLocalChecked(), Nan::GetFunction(tpl).ToLocalChecked());
 }
 
 void AnnoyIndexWrapper::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
@@ -243,7 +243,7 @@ void AnnoyIndexWrapper::getSupplementaryGetNNsParams(
   searchK = info[2]->IsUndefined() ? -1 : info[2]->NumberValue(context).FromJust();
 
   // Get out include distances flag.
-  includeDistances = info[3]->IsUndefined() ? false : info[3]->BooleanValue(context).FromJust();
+  includeDistances = info[3]->IsUndefined() ? false : Nan::To<bool>(info[3]).FromJust();
 }
 
 void AnnoyIndexWrapper::setNNReturnValues(
@@ -270,8 +270,8 @@ void AnnoyIndexWrapper::setNNReturnValues(
     }
 
     jsResultObject = Nan::New<Object>();
-    jsResultObject->Set(Nan::New("neighbors").ToLocalChecked(), jsNNIndexes);
-    jsResultObject->Set(Nan::New("distances").ToLocalChecked(), jsDistancesArray);
+    Nan::Set(jsResultObject, Nan::New("neighbors").ToLocalChecked(), jsNNIndexes);
+    Nan::Set(jsResultObject, Nan::New("distances").ToLocalChecked(), jsDistancesArray);
   }
   else {
     jsResultObject = jsNNIndexes.As<Object>();
@@ -299,7 +299,7 @@ bool AnnoyIndexWrapper::getFloatArrayParam(
     Local<Array> jsArray = Local<Array>::Cast(info[paramIndex]);
     Local<Value> val;
     for (unsigned int i = 0; i < jsArray->Length(); i++) {
-      val = jsArray->Get(i);
+      val = Nan::Get(jsArray, i).ToLocalChecked();
       // printf("Adding item to array: %f\n", (float)val->NumberValue(Nan::GetCurrentContext()).FromJust());
       vec[i] = (float)val->NumberValue(Nan::GetCurrentContext()).FromJust();
     }
