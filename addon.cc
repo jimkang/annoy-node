@@ -5,4 +5,6 @@ void InitAll(v8::Local<v8::Object> exports) {
   AnnoyIndexWrapper::Init(exports);
 }
 
-NODE_MODULE(addon, InitAll)
+NODE_MODULE_INIT() {
+    InitAll(exports);
+}
