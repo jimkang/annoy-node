@@ -8,6 +8,7 @@ build-wrapper:
 
 test: tests/data/text8-vector.json
 	node tests/smalltest.js
+	node tests/worker-thread-test.js
 	node tests/smalltest-manhattan.js
 	node tests/basictests.js basic-config.js
 
