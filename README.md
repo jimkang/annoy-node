@@ -5,6 +5,8 @@ annoy-node
 
 Node bindings for [Annoy](https://github.com/spotify/annoy), an efficient Approximate Nearest Neighbors implementation written in C++.
 
+Version 4.0.0 requires Node 14 or Node 16 and does not yet work on 18.
+
 Status: Tests pass, including one that loads 3 million vectors, but API coverage is not complete. Run on OS X and Linux with Node 8, 10, and 12. Not tried on Windows yet. Support for Node 6.3 and 4.6 ended at version 2.0.1 of this package.
 
 All of the [Python API](https://github.com/spotify/annoy#full-python-api) methods are implemented. The names are camel cased, JavaScript-style.
@@ -108,7 +110,8 @@ Thanks to:
 - [mbuszka](https://github.com/mbuszka) for [updating the wrapper to the latest Annoy (with Manhattan distance) and updating the random number generator](https://github.com/jimkang/annoy-node/pull/4).
 - [aaaton](https://github.com/aaaton) for [updating the example code so that it works](https://github.com/jimkang/annoy-node/pull/1).
 - [kornesh](https://github.com/kornesh) for [updating annoylib.h](https://github.com/jimkang/annoy-node/pull/10) to match the [Annoy of 2020-07-19](https://github.com/spotify/annoy/commit/7f2562add33eeb217dcdc755520c201aefc1b021).
-- [Benjaminrivard](https://github.com/Benjaminrivard) for [updating the wrapper for Node 14](https://github.com/jimkang/annoy-node/pull/13).
+- [Benjaminrivard](https://github.com/Benjaminrivard) for [updating the wrapper for Node 14](https://github.com/jimkang/annoy-node/pull/13) and testing the thread support.
+- [S4N0I](https://github.com/S4N0I) for adding context-awareness so that it can be used in threads.
 
 License
 -------
