@@ -31,9 +31,9 @@
     "d3-queue": "^3.0.3",
     "level-sublevel": "^6.6.4",
     "ndjson": "^1.5.0",
-    "tape": "^4.13.3",
-    "through2": "^2.0.1",
-    "node-worker-threads-pool": "^1.5.1"
+    "node-worker-threads-pool": "^1.5.1",
+    "tape": "^5.6.6",
+    "through2": "^2.0.1"
   },
   "dependencies": {
     "bindings": "^1.2.1",
